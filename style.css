@@ -1,14 +1,77 @@
 body {
   margin: 0;
-  background: #111;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #ff7eb3, #ff758c, #ff9a9e);
   color: white;
   text-align: center;
-  font-family: Arial, sans-serif;
+  overflow-x: hidden;
 }
 
-canvas {
-  background: black;
-  display: block;
+.container {
+  padding: 20px;
+}
+
+h1 {
+  font-size: 2.7em;
+}
+
+.card {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(12px);
+  padding: 20px;
+  border-radius: 20px;
   margin: 20px auto;
-  border: 2px solid white;
+  max-width: 420px;
+}
+
+button {
+  background: white;
+  color: #ff4d6d;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#gameCanvas {
+  display: none;
+  background: rgba(255,255,255,0.2);
+  border-radius: 15px;
+  margin-top: 20px;
+}
+
+#message {
+  display: none;
+  font-size: 1.6em;
+  margin-top: 20px;
+}
+
+#progressBar {
+  width: 80%;
+  height: 10px;
+  background: rgba(255,255,255,0.3);
+  margin: 10px auto;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+#progress {
+  height: 100%;
+  width: 0%;
+  background: white;
+}
+
+.confetti {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  top: 0;
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+  }
 }
