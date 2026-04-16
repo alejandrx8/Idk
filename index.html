@@ -1,188 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Dodge Game</title>
-<style>
-    body {
-        margin: 0;
-        overflow: hidden;
-        font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #0f172a, #1e293b);
-        color: white;
-        touch-action: none;
-    }
-
-    canvas {
-        display: block;
-    }
-
-    #ui {
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        font-size: 18px;
-    }
-
-    #gameOver {
-        position: fixed;
-        inset: 0;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        background: rgba(0,0,0,0.6);
-        backdrop-filter: blur(6px);
-    }
-
-    button {
-        padding: 12px 20px;
-        font-size: 16px;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        background: #38bdf8;
-        color: black;
-        margin-top: 10px;
-    }
-
-    button:active {
-        transform: scale(0.95);
-    }
-</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Taleah 🎉</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div id="ui">Score: 0</div>
+<div class="container">
+  <h1>🎂 Happy Birthday, Taleah!</h1>
 
-<div id="gameOver">
-    <h1>Game Over</h1>
-    <div id="finalScore"></div>
-    <button onclick="restart()">Restart</button>
+  <div class="card">
+    <p>Hope your day is full of laughs, fun, and unforgettable moments 💖</p>
+    <p>Catch the gifts to unlock your surprise 🎁</p>
+    <button onclick="startGame()">Start Game 🎮</button>
+  </div>
+
+  <div id="progressBar"><div id="progress"></div></div>
+
+  <canvas id="gameCanvas" width="350" height="420"></canvas>
+  <p id="scoreText"></p>
+
+  <p id="message">🎉 You did it Taleah! You deserve the best birthday ever 💕🎂</p>
 </div>
 
-<canvas id="game"></canvas>
-
-<script>
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
-
-let W, H;
-function resize() {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-}
-window.addEventListener("resize", resize);
-resize();
-
-let player = { x: W/2, y: H-80, w: 50, h: 50, speed: 10 };
-let keys = {};
-let blocks = [];
-let score = 0;
-let gameRunning = true;
-
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup", e => keys[e.key] = false);
-
-// Touch controls
-let touchX = null;
-document.addEventListener("touchstart", e => touchX = e.touches[0].clientX);
-document.addEventListener("touchmove", e => {
-    if (touchX !== null) {
-        let dx = e.touches[0].clientX - touchX;
-        player.x += dx * 0.3;
-        touchX = e.touches[0].clientX;
-    }
-});
-
-function spawnBlock() {
-    blocks.push({
-        x: Math.random() * (W - 40),
-        y: -40,
-        w: 40,
-        h: 40,
-        speed: 3 + Math.random() * 3
-    });
-}
-
-function drawPlayer() {
-    ctx.fillStyle = "#38bdf8";
-    ctx.shadowColor = "#38bdf8";
-    ctx.shadowBlur = 15;
-    ctx.fillRect(player.x, player.y, player.w, player.h);
-    ctx.shadowBlur = 0;
-}
-
-function drawBlocks() {
-    ctx.fillStyle = "#f43f5e";
-    blocks.forEach(b => {
-        ctx.fillRect(b.x, b.y, b.w, b.h);
-    });
-}
-
-function update() {
-    if (!gameRunning) return;
-
-    // movement
-    if (keys["ArrowLeft"]) player.x -= player.speed;
-    if (keys["ArrowRight"]) player.x += player.speed;
-
-    player.x = Math.max(0, Math.min(W - player.w, player.x));
-
-    // blocks
-    blocks.forEach(b => {
-        b.y += b.speed;
-
-        // collision
-        if (
-            b.x < player.x + player.w &&
-            b.x + b.w > player.x &&
-            b.y < player.y + player.h &&
-            b.y + b.h > player.y
-        ) {
-            endGame();
-        }
-    });
-
-    // remove off screen
-    blocks = blocks.filter(b => b.y < H + 50);
-
-    // spawn
-    if (Math.random() < 0.03) spawnBlock();
-
-    // score
-    score++;
-    document.getElementById("ui").innerText = "Score: " + score;
-}
-
-function draw() {
-    ctx.clearRect(0, 0, W, H);
-    drawPlayer();
-    drawBlocks();
-}
-
-function loop() {
-    update();
-    draw();
-    requestAnimationFrame(loop);
-}
-loop();
-
-function endGame() {
-    gameRunning = false;
-    document.getElementById("gameOver").style.display = "flex";
-    document.getElementById("finalScore").innerText = "Score: " + score;
-}
-
-function restart() {
-    blocks = [];
-    score = 0;
-    player.x = W/2;
-    gameRunning = true;
-    document.getElementById("gameOver").style.display = "none";
-}
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
