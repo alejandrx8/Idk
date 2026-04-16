@@ -1,83 +1,108 @@
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+let canvas = document.getElementById("gameCanvas");
+let ctx = canvas.getContext("2d");
 
-let player = {
-  x: 180,
-  y: 550,
-  width: 40,
-  height: 40,
-  speed: 6
-};
-
-let obstacles = [];
+let basket = { x: 150, y: 370, width: 70, height: 20 };
+let gifts = [];
 let score = 0;
-let gameOver = false;
+let target = 7;
+let gameRunning = false;
 
-document.addEventListener("keydown", movePlayer);
-
-function movePlayer(e) {
-  if (e.key === "ArrowLeft" && player.x > 0) {
-    player.x -= player.speed;
-  }
-  if (e.key === "ArrowRight" && player.x + player.width < canvas.width) {
-    player.x += player.speed;
-  }
+function startGame() {
+  canvas.style.display = "block";
+  score = 0;
+  gifts = [];
+  gameRunning = true;
+  document.getElementById("message").style.display = "none";
+  updateProgress();
+  gameLoop();
 }
 
-function createObstacle() {
-  let size = Math.random() * 30 + 20;
-  obstacles.push({
-    x: Math.random() * (canvas.width - size),
-    y: -size,
-    width: size,
-    height: size,
-    speed: Math.random() * 3 + 2
+function spawnGift() {
+  gifts.push({
+    x: Math.random() * (canvas.width - 30),
+    y: 0,
+    size: 28,
+    speed: 2 + Math.random() * 2
   });
 }
 
-function drawPlayer() {
-  ctx.fillStyle = "lime";
-  ctx.fillRect(player.x, player.y, player.width, player.height);
-}
+document.addEventListener("mousemove", (e) => {
+  let rect = canvas.getBoundingClientRect();
+  basket.x = e.clientX - rect.left - basket.width / 2;
+});
 
-function drawObstacles() {
-  ctx.fillStyle = "red";
-  obstacles.forEach((obs, index) => {
-    obs.y += obs.speed;
-    ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+document.addEventListener("touchmove", (e) => {
+  let rect = canvas.getBoundingClientRect();
+  basket.x = e.touches[0].clientX - rect.left - basket.width / 2;
+});
+
+function update() {
+  if (Math.random() < 0.04) spawnGift();
+
+  gifts.forEach((gift, index) => {
+    gift.y += gift.speed;
 
     if (
-      obs.x < player.x + player.width &&
-      obs.x + obs.width > player.x &&
-      obs.y < player.y + player.height &&
-      obs.y + obs.height > player.y
+      gift.y + gift.size > basket.y &&
+      gift.x < basket.x + basket.width &&
+      gift.x + gift.size > basket.x
     ) {
-      gameOver = true;
+      gifts.splice(index, 1);
+      score++;
+      updateProgress();
     }
 
-    if (obs.y > canvas.height) {
-      obstacles.splice(index, 1);
-      score++;
-      document.getElementById("score").innerText = "Score: " + score;
+    if (gift.y > canvas.height) {
+      gifts.splice(index, 1);
     }
   });
+
+  if (score >= target) {
+    winGame();
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#ff4d6d";
+  ctx.fillRect(basket.x, basket.y, basket.width, basket.height);
+
+  ctx.font = "24px serif";
+  gifts.forEach(gift => {
+    ctx.fillText("🎁", gift.x, gift.y);
+  });
+
+  document.getElementById("scoreText").innerText = `Gifts: ${score} / ${target}`;
 }
 
 function gameLoop() {
-  if (gameOver) {
-    ctx.fillStyle = "white";
-    ctx.font = "30px Arial";
-    ctx.fillText("Game Over", 130, 300);
-    return;
-  }
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  drawPlayer();
-  drawObstacles();
-
+  if (!gameRunning) return;
+  update();
+  draw();
   requestAnimationFrame(gameLoop);
 }
 
-setInterval(createObstacle, 800);
-gameLoop();
+function updateProgress() {
+  let percent = (score / target) * 100;
+  document.getElementById("progress").style.width = percent + "%";
+}
+
+function winGame() {
+  gameRunning = false;
+  document.getElementById("message").style.display = "block";
+  launchConfetti();
+}
+
+function launchConfetti() {
+  for (let i = 0; i < 80; i++) {
+    let confetti = document.createElement("div");
+    confetti.classList.add("confetti");
+    confetti.style.left = Math.random() * window.innerWidth + "px";
+    confetti.style.animationDuration = (2 + Math.random() * 3) + "s";
+    confetti.style.background = `hsl(${Math.random()*360},100%,70%)`;
+    document.body.appendChild(confetti);
+
+    setTimeout(() => confetti.remove(), 5000);
+  }
+}
