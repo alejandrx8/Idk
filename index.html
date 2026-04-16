@@ -1,19 +1,82 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mini Game</title>
-</head>
-<body>
-  <h1>Click Game</h1>
-  <button onclick="addScore()">Click me</button>
-  <p>Score: <span id="score">0</span></p>
-
-  <script>
-    let score = 0;
-    function addScore() {
-      score++;
-      document.getElementById("score").innerText = score;
+  <title>Reaction Game</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #111;
+      color: white;
     }
-  </script>
+
+    #gameBox {
+      width: 100%;
+      height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      cursor: pointer;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      background: #00c853;
+      color: white;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Reaction Speed Game</h1>
+<p>Wait for green… then tap as fast as you can</p>
+<button onclick="startGame()">Start</button>
+
+<div id="gameBox">Click Start</div>
+
+<script>
+let startTime;
+let waiting = false;
+
+function startGame() {
+  const box = document.getElementById("gameBox");
+  box.style.background = "red";
+  box.innerHTML = "Wait...";
+  waiting = true;
+
+  const delay = Math.random() * 3000 + 2000;
+
+  setTimeout(() => {
+    box.style.background = "green";
+    box.innerHTML = "CLICK!";
+    startTime = new Date().getTime();
+    waiting = false;
+  }, delay);
+}
+
+document.getElementById("gameBox").onclick = function () {
+  const box = document.getElementById("gameBox");
+
+  if (waiting) {
+    box.innerHTML = "Too early!";
+    box.style.background = "black";
+    return;
+  }
+
+  if (startTime) {
+    const reactionTime = new Date().getTime() - startTime;
+    box.innerHTML = "Your time: " + reactionTime + " ms";
+    box.style.background = "black";
+    startTime = null;
+  }
+};
+</script>
+
 </body>
 </html>
